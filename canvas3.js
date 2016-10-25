@@ -185,7 +185,6 @@ function drawPlayer() {
     offset.x -= player.velocity;
     walkRight.update();
     walkRight.draw(player.x, player.y);
-
     player.faceRight = true;
   } else if (keys.keyA === true) { // left
     // update move to the left
@@ -210,15 +209,18 @@ function drawPlayer() {
     player.faceLeft = false;
     player.faceForward = true;
   }
-
-
 }
 
 function drawBG() {
   var objectsLength = objects.length;
-  for(var i=0; i < canvas.width; i+=50) {
-    backgroundStills.drawStill(i, player.y+145, 5);
+  for(var i=0; i < canvas.width-offset.x; i+=50) {
+    backgroundStills.drawStill(i, player.y+146, 5);
+    backgroundStills.drawStill(i, player.y+146+50, 10);
+    backgroundStills.drawStill(i, player.y+146+50+20, 10);
   }
+
+  canvasContext.fillStyle = '#189b33';
+  canvasContext.fillRect(canvas.width, player.y+200, 30, 100);
 
 
   // canvasContext.fillStyle = '#2d77ef';
