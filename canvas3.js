@@ -12,8 +12,8 @@ var canvas,
       faceRight: false,
       faceLeft: false,
       faceForward: true,
-      velocity: 5,
-      speed: 15
+      velocity: 0,
+      speed: 20
     },
     offset = {
       x: 0,
@@ -41,19 +41,19 @@ var transitionRight = new Animation(characterTransition, 4, 0, 0);
 var transitionLeft = new Animation(characterTransition, 4, 1, 1);
 var stand = new Animation(characterStand, 6, 0, 11);
 
+var backgroundStills = new Animation(background, 0, 0, 24);
+
 function onKeyDown(event) {
   var keyCode = event.keyCode;
   switch (keyCode) {
     case 68: //d -> right
       keys.keyD = true;
-
       break;
     case 83: //s -> down
       keys.keyS = true;
       break;
     case 65: //a -> left
       keys.keyA = true;
-
       break;
     case 87: //w -> up
       keys.keyW = true;
@@ -95,7 +95,7 @@ window.onload = function() {
 function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-  player.y = window.innerHeight/2;
+  player.y = window.innerHeight-250;
   player.x = window.innerWidth/2;
   drawAssets();
 }
@@ -162,6 +162,18 @@ function Animation(spritesheet, frameSpeed, startFrame, endFrame) {
       x, y, // x, y
       spritesheet.frameWidth, spritesheet.frameHeight); // width, height
   };
+
+  // draw still frame
+  this.drawStill = function(x, y, frame) {
+    var row = Math.floor(animationSequence[frame] / spritesheet.framesPerRow);
+    var col = Math.floor(animationSequence[frame] % spritesheet.framesPerRow);
+    canvasContext.drawImage(
+      spritesheet.image, // sheet
+      col * spritesheet.frameWidth, row * spritesheet.frameHeight, // sx, sy
+      spritesheet.frameWidth, spritesheet.frameHeight, // swidth, sheight
+      x, y, // x, y
+      spritesheet.frameWidth, spritesheet.frameHeight); // width, height
+  };
 }
 
 function drawPlayer() {
@@ -171,7 +183,6 @@ function drawPlayer() {
     if(player.velocity < player.speed)
       player.velocity++;
     offset.x -= player.velocity;
-
     walkRight.update();
     walkRight.draw(player.x, player.y);
 
@@ -205,27 +216,31 @@ function drawPlayer() {
 
 function drawBG() {
   var objectsLength = objects.length;
+  for(var i=0; i < canvas.width; i+=50) {
+    backgroundStills.drawStill(i, player.y+145, 5);
+  }
 
-  canvasContext.fillStyle = '#2d77ef';
-  canvasContext.fillRect(0, 0, canvas.width, canvas.height);
-  canvasContext.fillStyle = '#189b33';
-  canvasContext.fillRect(0, player.y+145, canvas.width, 15);
-  canvasContext.fillStyle = '#189b33';
-  canvasContext.fillRect(0, player.y+145, 30, 50);
-  canvasContext.fillStyle = '#189b33';
-  canvasContext.fillRect(500, player.y+145, 30, 50);
-  canvasContext.fillStyle = '#189b33';
-  canvasContext.fillRect(1000, player.y+145, 30, 50);
-  canvasContext.fillStyle = '#189b33';
-  canvasContext.fillRect(1500, player.y+145, 30, 50);
-  canvasContext.fillStyle = '#189b33';
-  canvasContext.fillRect(2000, player.y+145, 30, 50);
-  canvasContext.fillStyle = '#189b33';
-  canvasContext.fillRect(2500, player.y+145, 30, 50);
-  canvasContext.fillStyle = '#189b33';
-  canvasContext.fillRect(3000, player.y+145, 30, 50);
-  canvasContext.fillStyle = '#189b33';
-  canvasContext.fillRect(3500, player.y+145, 30, 50);
+
+  // canvasContext.fillStyle = '#2d77ef';
+  // canvasContext.fillRect(0, 0, canvas.width, canvas.height);
+  // canvasContext.fillStyle = '#189b33';
+  // canvasContext.fillRect(0, player.y+145, canvas.width, 15);
+  // canvasContext.fillStyle = '#189b33';
+  // canvasContext.fillRect(0, player.y+145, 30, 50);
+  // canvasContext.fillStyle = '#189b33';
+  // canvasContext.fillRect(500, player.y+145, 30, 50);
+  // canvasContext.fillStyle = '#189b33';
+  // canvasContext.fillRect(1000, player.y+145, 30, 50);
+  // canvasContext.fillStyle = '#189b33';
+  // canvasContext.fillRect(1500, player.y+145, 30, 50);
+  // canvasContext.fillStyle = '#189b33';
+  // canvasContext.fillRect(2000, player.y+145, 30, 50);
+  // canvasContext.fillStyle = '#189b33';
+  // canvasContext.fillRect(2500, player.y+145, 30, 50);
+  // canvasContext.fillStyle = '#189b33';
+  // canvasContext.fillRect(3000, player.y+145, 30, 50);
+  // canvasContext.fillStyle = '#189b33';
+  // canvasContext.fillRect(3500, player.y+145, 30, 50);
 
   canvasContext.restore();
 }
