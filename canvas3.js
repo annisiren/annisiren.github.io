@@ -13,7 +13,7 @@ var canvas,
       faceLeft: false,
       faceForward: true,
       velocity: 0,
-      speed: 3
+      speed: 15
     },
     offset = {
       x: 0,
@@ -29,10 +29,16 @@ var canvas,
       500, 1000, 1500, 2000
     ];
 
-var characterSprite = new spriteSheet('assets/right_walk_spritesheet.png', 85, 150); // path, width, height
+var characterSpriteRight = new spriteSheet('assets/right_walk_spritesheet.png', 85, 150); // path, width, height
+var characterSpriteLeft = new spriteSheet('assets/left_walk_spritesheet.png', 85, 150);
+var characterTransition = new spriteSheet('assets/transition_sprite.png', 96, 150);
 var characterStand = new spriteSheet('assets/standing_spritesheet.png', 92, 150);
 var background = new spriteSheet('assets/placeholder.png', 50, 50);
-var walkRight = new Animation(characterSprite, 4, 0, 6); //sprite, speed, start, end
+
+var walkRight = new Animation(characterSpriteRight, 4, 0, 6); //sprite, speed, start, end
+var walkLeft = new Animation(characterSpriteLeft, 4, 0, 6);
+var transitionRight = new Animation(characterTransition, 4, 0, 0);
+var transitionLeft = new Animation(characterTransition, 4, 1, 1);
 var stand = new Animation(characterStand, 6, 0, 11);
 
 function onKeyDown(event) {
@@ -40,15 +46,18 @@ function onKeyDown(event) {
   switch (keyCode) {
     case 68: //d -> right
       keys.keyD = true;
-      console.log("Offset: ", offset.x);
-      offset.x--;
+      if(player.velocity < player.speed)
+        player.velocity++;
+      offset.x -= player.velocity;
       break;
     case 83: //s -> down
       keys.keyS = true;
       break;
     case 65: //a -> left
       keys.keyA = true;
-      offset.x++;
+      if(player.velocity < player.speed)
+        player.velocity++;
+      offset.x +=player.velocity;
       break;
     case 87: //w -> up
       keys.keyW = true;
@@ -91,7 +100,7 @@ function resizeCanvas() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
   player.y = window.innerHeight/2;
-  player.x = window.innerHeight/2;
+  player.x = window.innerWidth/2;
   drawAssets();
 }
 
@@ -106,7 +115,7 @@ function drawAssets() {
 }
 
 function clearCanvas() {
-  canvasContext.clearRect(offset.x, offset.y, canvas.width, canvas.height);
+  canvasContext.clearRect(-offset.x, -offset.y, canvas.width, canvas.height);
 }
 
 function spriteSheet(path, frameWidth, frameHeight) {
@@ -165,15 +174,27 @@ function drawPlayer() {
     walkRight.update();
     walkRight.draw(player.x-offset.x, player.y-offset.y);
     player.faceRight = true;
-    // player.x++;
-    // offset.x++;
+  } else if (keys.keyA === true) { // left
+    // update move to the left
+    walkLeft.update();
+    walkLeft.draw(player.x-offset.x, player.y-offset.y);
+    player.faceLeft = true;
   } else {
     stand.update();
     stand.draw(player.x-offset.x, player.y-offset.y);
+    if(player.faceforward === false && player.faceRight === true) {
+      transitionRight.update();
+      transitionRight.draw(player.x-offset.x, player.y-offset.y);
+    } else if(player.faceforward === false && player.faceLeft === true) {
+      transitionLeft.update();
+      transitionLeft.draw(player.x-offset.x, player.y-offset.y);
+    }
     player.faceRight = false;
     player.faceLeft = false;
     player.faceForward = true;
   }
+
+
 }
 
 function drawBG() {
@@ -184,11 +205,21 @@ function drawBG() {
   canvasContext.fillStyle = '#189b33';
   canvasContext.fillRect(0, player.y+145, canvas.width, 15);
   canvasContext.fillStyle = '#189b33';
+  canvasContext.fillRect(0, player.y+145, 30, 50);
+  canvasContext.fillStyle = '#189b33';
   canvasContext.fillRect(500, player.y+145, 30, 50);
   canvasContext.fillStyle = '#189b33';
   canvasContext.fillRect(1000, player.y+145, 30, 50);
   canvasContext.fillStyle = '#189b33';
   canvasContext.fillRect(1500, player.y+145, 30, 50);
+  canvasContext.fillStyle = '#189b33';
+  canvasContext.fillRect(2000, player.y+145, 30, 50);
+  canvasContext.fillStyle = '#189b33';
+  canvasContext.fillRect(2500, player.y+145, 30, 50);
+  canvasContext.fillStyle = '#189b33';
+  canvasContext.fillRect(3000, player.y+145, 30, 50);
+  canvasContext.fillStyle = '#189b33';
+  canvasContext.fillRect(3500, player.y+145, 30, 50);
 
   canvasContext.restore();
 }
