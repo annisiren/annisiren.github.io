@@ -12,7 +12,7 @@ var canvas,
       faceRight: false,
       faceLeft: false,
       faceForward: true,
-      velocity: 0,
+      velocity: 5,
       speed: 15
     },
     offset = {
@@ -46,18 +46,14 @@ function onKeyDown(event) {
   switch (keyCode) {
     case 68: //d -> right
       keys.keyD = true;
-      if(player.velocity < player.speed)
-        player.velocity++;
-      offset.x -= player.velocity;
+
       break;
     case 83: //s -> down
       keys.keyS = true;
       break;
     case 65: //a -> left
       keys.keyA = true;
-      if(player.velocity < player.speed)
-        player.velocity++;
-      offset.x +=player.velocity;
+
       break;
     case 87: //w -> up
       keys.keyW = true;
@@ -69,14 +65,14 @@ function onKeyUp(event) {
   switch (keyCode) {
     case 68: //d
       keys.keyD = false;
-      player.velocity = 0;
+      player.velocity = 5;
       break;
     case 83: //s
       keys.keyS = false;
       break;
     case 65: //a
       keys.keyA = false;
-      player.velocity = 0;
+      player.velocity = 5;
       break;
     case 87: //w
       keys.keyW = false;
@@ -172,11 +168,20 @@ function drawPlayer() {
 
   if (keys.keyD === true) { // right
     // update move to the right
+    if(player.velocity < player.speed)
+      player.velocity++;
+    offset.x -= player.velocity;
+
     walkRight.update();
     walkRight.draw(player.x, player.y);
+
     player.faceRight = true;
   } else if (keys.keyA === true) { // left
     // update move to the left
+    if(player.velocity < player.speed)
+      player.velocity++;
+    offset.x +=player.velocity;
+
     walkLeft.update();
     walkLeft.draw(player.x, player.y);
     player.faceLeft = true;
