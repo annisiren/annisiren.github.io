@@ -107,11 +107,12 @@ function resizeCanvas() {
 function drawAssets() {
   canvasContext.save();
   canvasContext.translate(offset.x, offset.y);
-  requestAnimationFrame(drawAssets);
   clearCanvas();
+
   drawBG();
   drawPlayer();
   canvasContext.restore();
+  requestAnimationFrame(drawAssets);
 }
 
 function clearCanvas() {
@@ -159,11 +160,11 @@ function Animation(spritesheet, frameSpeed, startFrame, endFrame) {
     var col = Math.floor(animationSequence[currentFrame] % spritesheet.framesPerRow);
 
     canvasContext.drawImage(
-      spritesheet.image,
-      col * spritesheet.frameWidth, row * spritesheet.frameHeight,
-      spritesheet.frameWidth, spritesheet.frameHeight,
-      x, y,
-      spritesheet.frameWidth, spritesheet.frameHeight);
+      spritesheet.image, // sheet
+      col * spritesheet.frameWidth, row * spritesheet.frameHeight, // sx, sy
+      spritesheet.frameWidth, spritesheet.frameHeight, // swidth, sheight
+      x, y, // x, y
+      spritesheet.frameWidth, spritesheet.frameHeight); // width, height
   };
 }
 
@@ -172,22 +173,22 @@ function drawPlayer() {
   if (keys.keyD === true) { // right
     // update move to the right
     walkRight.update();
-    walkRight.draw(player.x-offset.x, player.y-offset.y);
+    walkRight.draw(player.x, player.y);
     player.faceRight = true;
   } else if (keys.keyA === true) { // left
     // update move to the left
     walkLeft.update();
-    walkLeft.draw(player.x-offset.x, player.y-offset.y);
+    walkLeft.draw(player.x, player.y);
     player.faceLeft = true;
   } else {
     stand.update();
-    stand.draw(player.x-offset.x, player.y-offset.y);
+    stand.draw(player.x, player.y);
     if(player.faceforward === false && player.faceRight === true) {
       transitionRight.update();
-      transitionRight.draw(player.x-offset.x, player.y-offset.y);
+      transitionRight.draw(player.x, player.y);
     } else if(player.faceforward === false && player.faceLeft === true) {
       transitionLeft.update();
-      transitionLeft.draw(player.x-offset.x, player.y-offset.y);
+      transitionLeft.draw(player.x, player.y);
     }
     player.faceRight = false;
     player.faceLeft = false;
