@@ -13,7 +13,8 @@ var canvas,
       faceLeft: false,
       faceForward: true,
       velocity: 0,
-      speed: 20
+      speed: 15,
+      maxLeft: 50
     },
     offset = {
       x: 0,
@@ -24,9 +25,6 @@ var canvas,
       keyA = false,
       keyS = false,
       keyD = false
-    ],
-    objects=[
-      500, 1000, 1500, 2000
     ];
 
 var characterSpriteRight = new spriteSheet('assets/right_walk_spritesheet.png', 85, 150); // path, width, height
@@ -65,14 +63,14 @@ function onKeyUp(event) {
   switch (keyCode) {
     case 68: //d
       keys.keyD = false;
-      player.velocity = 5;
+      player.velocity = 0;
       break;
     case 83: //s
       keys.keyS = false;
       break;
     case 65: //a
       keys.keyA = false;
-      player.velocity = 5;
+      player.velocity = 0;
       break;
     case 87: //w
       keys.keyW = false;
@@ -102,7 +100,8 @@ function resizeCanvas() {
 
 function drawAssets() {
   canvasContext.save();
-  canvasContext.translate(offset.x, offset.y);
+  if(offset.x < 0)
+    canvasContext.translate(offset.x, offset.y);
   clearCanvas();
 
   drawBG();
@@ -183,6 +182,102 @@ function drawPlayer() {
     if(player.velocity < player.speed)
       player.velocity++;
     offset.x -= player.velocity;
+    if(offset.x < 0) {
+      walkRight.update();
+      walkRight.draw(player.x, player.y);
+    } else {
+      walkRight.update();
+      walkRight.draw(player.x-offset.x, player.y);
+    }
+    player.faceRight = true;
+  } else if (keys.keyA === true) { // left
+    // update move to the left
+    if (offset.x > (window.innerWidth/2) - player.maxLeft){
+      stand.update();
+      stand.draw(player.x-offset.x, player.y);
+    } else {
+      if(player.velocity < player.speed)
+        player.velocity++;
+      offset.x +=player.velocity;
+      if(offset.x < 0) {
+        walkLeft.update();
+        walkLeft.draw(player.x, player.y);
+      } else {
+        walkLeft.update();
+        walkLeft.draw(player.x-offset.x, player.y);
+      }
+      player.faceLeft = true;
+    }
+  } else {
+    if(offset.x < 0) {
+      stand.update();
+      stand.draw(player.x, player.y);
+    } else {
+      stand.update();
+      stand.draw(player.x-offset.x, player.y);
+    }
+    if(player.faceforward === false && player.faceRight === true) {
+      transitionRight.update();
+      transitionRight.draw(player.x, player.y);
+    } else if(player.faceforward === false && player.faceLeft === true) {
+      transitionLeft.update();
+      transitionLeft.draw(player.x, player.y);
+    }
+    player.faceRight = false;
+    player.faceLeft = false;
+    player.faceForward = true;
+  }
+
+  // if (keys.keyD === true) { // right
+  //   // update move to the right
+  //   if(player.velocity < player.speed)
+  //     player.velocity++;
+  //   offset.x -= player.velocity;
+  //   walkRight.update();
+  //   console.log("keys.keyD  offset.x", offset.x);
+  //   if(offset.x < 0) {
+  //     walkLeft.draw(player.x, player.y);
+  //   } else {
+  //     walkRight.draw(player.x, player.y);
+  //   }
+  //   player.faceRight = true;
+  // } else if (keys.keyA === true) { // left
+  //   // update move to the left
+  //   if(player.velocity < player.speed)
+  //     player.velocity++;
+  //   offset.x +=player.velocity;
+  //
+  //   walkLeft.update();
+  //   console.log("keys.keyA  offset.x", offset.x);
+  //   if(offset.x < 0) {
+  //     walkLeft.draw(player.x, player.y);
+  //   } else {
+  //     walkLeft.draw(player.x, player.y);
+  //   }
+  //   player.faceLeft = true;
+  // } else {
+  //   stand.update();
+  //   stand.draw(player.x, player.y);
+  //   if(player.faceforward === false && player.faceRight === true) {
+  //     transitionRight.update();
+  //     transitionRight.draw(player.x, player.y);
+  //   } else if(player.faceforward === false && player.faceLeft === true) {
+  //     transitionLeft.update();
+  //     transitionLeft.draw(player.x, player.y);
+  //   }
+  //   player.faceRight = false;
+  //   player.faceLeft = false;
+  //   player.faceForward = true;
+  // }
+
+}
+
+function drawPlayerCentered() {
+  if (keys.keyD === true) { // right
+    // update move to the right
+    if(player.velocity < player.speed)
+      player.velocity++;
+    offset.x -= player.velocity;
     walkRight.update();
     walkRight.draw(player.x, player.y);
     player.faceRight = true;
@@ -212,7 +307,6 @@ function drawPlayer() {
 }
 
 function drawBG() {
-  var objectsLength = objects.length;
   for(var i=0; i < canvas.width-offset.x; i+=50) {
     backgroundStills.drawStill(i, player.y+146, 5);
     backgroundStills.drawStill(i, player.y+146+50, 10);
@@ -221,28 +315,6 @@ function drawBG() {
 
   canvasContext.fillStyle = '#189b33';
   canvasContext.fillRect(canvas.width, player.y+200, 30, 100);
-
-
-  // canvasContext.fillStyle = '#2d77ef';
-  // canvasContext.fillRect(0, 0, canvas.width, canvas.height);
-  // canvasContext.fillStyle = '#189b33';
-  // canvasContext.fillRect(0, player.y+145, canvas.width, 15);
-  // canvasContext.fillStyle = '#189b33';
-  // canvasContext.fillRect(0, player.y+145, 30, 50);
-  // canvasContext.fillStyle = '#189b33';
-  // canvasContext.fillRect(500, player.y+145, 30, 50);
-  // canvasContext.fillStyle = '#189b33';
-  // canvasContext.fillRect(1000, player.y+145, 30, 50);
-  // canvasContext.fillStyle = '#189b33';
-  // canvasContext.fillRect(1500, player.y+145, 30, 50);
-  // canvasContext.fillStyle = '#189b33';
-  // canvasContext.fillRect(2000, player.y+145, 30, 50);
-  // canvasContext.fillStyle = '#189b33';
-  // canvasContext.fillRect(2500, player.y+145, 30, 50);
-  // canvasContext.fillStyle = '#189b33';
-  // canvasContext.fillRect(3000, player.y+145, 30, 50);
-  // canvasContext.fillStyle = '#189b33';
-  // canvasContext.fillRect(3500, player.y+145, 30, 50);
 
   canvasContext.restore();
 }
