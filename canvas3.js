@@ -22,7 +22,7 @@ var canvas,
       y: 0,
       right: null
     },
-    canvasSize = 1000;
+    canvasSize = 3000;
     keys=[
       keyW = false,
       keyA = false,
@@ -195,83 +195,85 @@ function drawPlayer() {
 
   if (keys.keyD === true) { // right
     // update move to the right
-
-    if (offset.right > (window.innerWidth/2) - player.maxRight) { //stop at max offset
+    if (offset.right && offset.right > (window.innerWidth/2) - player.maxRight) { //stop at max offset
+      console.log("update at most right end");
       stand.update();
       stand.draw(player.x+offset.right, player.y);
     } else {
       if(player.velocity < player.speed)
         player.velocity++;
+
       if(offset.x <= 0 && offset.x > (window.innerWidth/2)-canvasSize) { // normal walk
-        // console.log("D normal offset.x", offset.x);
+        console.log("normal walk right", offset.x, offset.right);
         offset.x -= player.velocity;
         walkRight.update();
         walkRight.draw(player.x, player.y);
       } else if(offset.x > 0) { // left most section
-        // console.log("D left offset.x", offset.x);
+        console.log("left walk right", offset.x, offset.right);
         offset.x -= player.velocity;
         walkRight.update();
         walkRight.draw(player.x-offset.x, player.y);
       } else if (offset.x <= (window.innerWidth/2)-canvasSize) { // right most section
-        // console.log("D offset.right", offset.right);
-        // console.log("D offset.x", offset.x);
+        console.log("right walk right", offset.x, offset.right);
         offset.right +=player.velocity;
         walkRight.update();
         walkRight.draw(player.x+offset.right, player.y);
       }
+      // if(offset.right < 0) {
+      //   console.log("offset set");
+      //   // offset.x = (window.innerWidth/2)-canvasSize;
+      // }
       player.faceRight = true;
     }
   } else if (keys.keyA === true) { // left
     // top player moving left
     if (offset.x > (window.innerWidth/2) - player.maxLeft){ // stop at max offset
+      console.log("update at most left end");
       stand.update();
       stand.draw(player.x-offset.x, player.y);
     } else { // move player left
       if(player.velocity < player.speed)
         player.velocity++;
 
-      if(offset.x <= 0  && offset.x >= (window.innerWidth/2)-canvasSize) { // normal walk left
-        // console.log("A normal offset.x", offset.x);
+      if(!offset.right) {
         offset.x +=player.velocity;
+      }
+
+      if(offset.x <= 0  && offset.x >= (window.innerWidth/2)-canvasSize) { // normal walk left
+        console.log("normal walk left", offset.x, offset.right);
+
         walkLeft.update();
         walkLeft.draw(player.x, player.y);
       } else if (offset.x > 0) { // left most section
-        // console.log("A offset.x", offset.x);
-        offset.x +=player.velocity;
+        console.log("left walk left", offset.x, offset.right);
+        // offset.x +=player.velocity;
         walkLeft.update();
         walkLeft.draw(player.x-offset.x, player.y);
       } else if (offset.x < (window.innerWidth/2)-canvasSize){ // right most section  if(offset.right > 0)
-        // console.log("A offset.right", offset.right);
-        // console.log("A offset.x", offset.x);
+        console.log("right walk left", offset.x, offset.right);
         offset.right -=player.velocity;
         walkLeft.update();
         walkLeft.draw(player.x+offset.right, player.y);
       }
-      if(offset.right < 0) {
-        // console.log("A right nulled");
+      if(offset.right <= 0 && offset.right) {
+        console.log("right null");
         offset.right = null;
-        offset.x = (window.innerWidth/2)-canvasSize;
+        // offset.x = (window.innerWidth/2)-canvasSize;
       }
       player.faceLeft = true;
     }
   } else {
 
     if(offset.x > 0) { // between 0 and left
-      // console.log("left stand");
       stand.update();
       stand.draw(player.x-offset.x, player.y);
     } else if(offset.right > 0) { // between last canvas size/2 and right
-      // console.log("right stand");
-      // console.log(player.x-offset.x, -canvasSize+(window.innerWidth/2));
       stand.update();
       stand.draw(player.x+offset.right, player.y);
     } else if(offset.x < 0  && offset.right <= 0) { // between 0 and - offset
-      // console.log("normal stand");
       stand.update();
       stand.draw(player.x, player.y);
     } else { // otherwise stand
-      // console.log("else stand");
-      // offset.right = 0;
       stand.update();
       stand.draw(player.x-offset.x, player.y);
     }
